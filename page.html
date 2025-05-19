@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mini Boutique</title>
+  
+  
+ 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+   
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f7f8fa;
+      color: #333;
+    }
+
+    header {
+      background-color: #303f9f;
+      position: fixed;
+  top: 0;
+  height: 40px;
+  left: 0;
+  width: 100%;
+  transition: background 0.3s ease;
+  z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product {
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+    }
+
+    .product img {
+      max-width: 100%;
+      height: 150px;
+      object-fit: contain;
+    }
+
+    .product h3 {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    .product p {
+      margin: 0.3rem 0;
+      color: #555;
+    }
+
+    .product button {
+      margin-top: 0.5rem;
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .product button:hover {
+      background-color: #303f9f;
+    }
+
+    .cart {
+      margin-top: 2rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .cart h2 {
+      margin-top: 0;
+    }
+
+    .cart ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .cart li {
+      margin: 0.5rem 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .cart button {
+      margin-top: 1rem;
+      background-color: #4caf50;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* Chatbot */
+    #chatbot {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+
+    #chatbot-header {
+      background: #3f51b5;
+      color: white;
+      padding: 0.5rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    #chatbot-messages {
+      flex: 1;
+      padding: 0.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    #chatbot-input {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+
+    #chatbot-input input {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      outline: none;
+    }
+
+    #chatbot-input button {
+      background: #3f51b5;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+
+    /* Checkout Modal */
+    #checkout-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #checkout-form {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 300px;
+    }
+
+    #checkout-form h3 {
+      margin-top: 0;
+    }
+
+    #checkout-form input {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    #checkout-form button {
+      margin-top: 1rem;
+      padding: 0.5rem;
+      width: 100%;
+    }
+    /* Modal background */
+#history-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal content */
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Table container for responsiveness */
+.table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+/* Styled table */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.history-table thead {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.history-table th, .history-table td {
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.history-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Close button */
+.close-btn {
+  margin-top: 1.5rem;
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: #c0392b;
+}
+
+  </style>
+</head>
+<body>
+
+  <header id="mainHeader">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; ">
+      <div style="display: flex; align-items: center; gap: 10px;">
+       
+        <span style="color: white; font-weight: bold; padding-top: -90px;  ">
+          <div class="lg" style="margin-top: -39px;"><img src="imgs\image-removebg-preview.png" alt="Gaming Logo" style="height: 40px; margin-top: 30px;">
+            <div class="mythics" style="margin-top: -37px;margin-left:40px;">Mythics Store</div>
+          </div>
+          </span>
+      </div>
+      <button onclick="scrollToCart()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: white; margin-top: -15px;">
+        🛒
+      </button>
+    </div>
+  </header>
+  
+  
+  
+
+<div class="container">
+  <div class="products"  id="products"></div>
+
+  <div class="cart" id="cart">
+    <h2>🛒 Panier</h2>
+    <ul id="cart-items"></ul>
+    <button onclick="openModal()">Passer la commande</button>
+    <button onclick="showHistory()" >
+      🧾 Historique
+    </button>
+  </div>
+
+ 
+</div>
+
+
+<div id="chatbot">
+  <div id="chatbot-header">🤖 Aide</div>
+  <div id="chatbot-messages"></div>
+  <div id="chatbot-input">
+    <input id="chat-input" placeholder="Votre message..." />
+    <button onclick="sendMessage()">Envoyer</button>
+  </div>
+</div>
+
+
+<div id="checkout-modal">
+  <div id="checkout-form">
+    <h3>Finaliser la commande</h3>
+    <input id="name" placeholder="Nom complet" />
+    <input id="email" type="email" placeholder="Email" />
+    <input id="address" placeholder="Adresse de livraison" />
+    <button onclick="confirmPurchase()">Confirmer</button>
+    <button onclick="closeModal()">Annuler</button>
+  </div>
+</div>
+
+<div id="history-modal">
+  <div class="modal-content">
+    <h3>🧾 Historique des Achats</h3>
+    <div class="table-container">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Adresse</th>
+            <th>Email</th>
+            <th>Articles</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="history-table-body"></tbody>
+      </table>
+    </div>
+    <button class="close-btn" onclick="closeHistory()">Fermer</button>
+  </div>
+</div>
+
+  
+<script>
+  const products = [
+    { id: 1, name: "Clavier Mécanique RGB", price: 120, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnPBAhO1p6ZFLwS9R_nqCxdylfQAz6G9NI1w&s" },
+    { id: 2, name: "Souris Gamer", price: 60, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLhdkXBtCsJVOCcclr6b4UG3D9q9wVq41kWA&s" },
+    { id: 3, name: "Casque Gaming", price: 150, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkz0__GXWwaE7SJ5Vg626TGtYFMUPrrHNlKg&s" },
+    { id: 4, name: "Écran 27'' 144Hz", price: 700, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR09vXqdHbE94sYN5fqoMoaU_ZoQ3m0IQcoFQ&s" },
+    { id: 5, name: "Manette PS5", price: 250, img: "https://gameszone.tn/208-large_default/manette-ps5-sans-fil-dualsense-edge-tunisie.jpg" },
+    { id: 6, name: "Tapis de Souris XXL", price: 30, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEbwtNFAErFdUFMbNfyhR7WR9ZaYBzo0SCtg&s" },
+    { id: 7, name: "PC Portable Gaming", price: 2500, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4w6TukGT_YzohSxAdPi0k6wBrllPwRP0nxA&s" },
+    { id: 8, name: "Support Écran LED", price: 45, img: "https://spacenet.tn/138281-large_default/support-de-bureau-pour-ecran-pc-lcd-a-led-de-17-30-noir.jpg" },
+    { id: 9, name: "Webcam Full HD", price: 95, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbnZJrP27j5KftWuZnoZRBzLIE7Cdsn2VkfA&s" },
+    { id: 10, name: "Microphone Studio", price: 170, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4LWMWs07jaeTJEk2RnzxNX2j61N3Pj1XNPw&s" },
+    { id: 11, name: "Chaise Gaming", price: 480, img: "https://m.media-amazon.com/images/I/81atqMlP6zL.jpg" },
+    { id: 12, name: "Carte Graphique RTX", price: 1600, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuPlSoAQe0LGmjCboBoi2iptMK_gjskID92w&s" }
+  ];
+
+  const cartKey = "mini-boutique-cart";
+
+  function loadProducts() {
+    const container = document.getElementById('products');
+    container.innerHTML = '';
+    products.forEach(product => {
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerHTML = `
+        <img src="${product.img}" alt="${product.name}">
+        <h3>${product.name}</h3>
+        <p>${product.price} TND</p>
+        <button onclick="addToCart(${product.id})">Ajouter</button>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+function addToCart(productId) {
+    let cart = getCart();
+    const existing = cart.find(p => p.id === productId);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ id: productId, qty: 1 });
+    }
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+    updateCartDisplay();
+  }
+
+function getCart() {
+    return JSON.parse(localStorage.getItem(cartKey)) || [];
+  }
+
+
+function updateCartDisplay() {
+    const cartItems = document.getElementById('cart-items');
+    cartItems.innerHTML = '';
+    const cart = getCart();
+    cart.forEach(item => {
+      const product = products.find(p => p.id === item.id);
+      const li = document.createElement('li');
+      li.textContent = `${product.name} x ${item.qty}`;
+      cartItems.appendChild(li);
+    });
+  }
+
+
+function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    displayMessage("👤", msg);
+    setTimeout(() => {
+      respondToMessage(msg.toLowerCase());
+    }, 500);
+    input.value = '';
+  }
+
+function displayMessage(sender, text) {
+    const container = document.getElementById('chatbot-messages');
+    const p = document.createElement('p');
+    p.innerHTML = `<strong>${sender}:</strong> ${text}`;
+    container.appendChild(p);
+    container.scrollTop = container.scrollHeight;
+  }
+
+function respondToMessage(msg) {
+    let response = "Désolé, je ne comprends pas.";
+    if (msg.includes("bonjour") || msg.includes("salut")) {
+      response = "Bonjour ! Comment puis-je vous aider ?";
+    } else if (msg.includes("prix") || msg.includes("coûte")) {
+      response = "Les prix sont affichés sous chaque produit.";
+    } else if (msg.includes("livraison")) {
+      response = "La livraison est gratuite à partir de 20 TND.";
+    } else if (msg.includes("panier")) {
+      response = "Vous pouvez voir votre panier en bas de la page.";
+    }
+    displayMessage("🤖", response);
+  }
+
+
+function openModal() {
+    document.getElementById('checkout-modal').style.display = 'flex';
+  }
+
+function closeModal() {
+    document.getElementById('checkout-modal').style.display = 'none';
+  }
+
+  
+function confirmPurchase() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const address = document.getElementById("address").value.trim();
+
+  if (!name || !email || !address) {
+    alert("Veuillez remplir tous les champs.");
+    return;
+  }
+
+  const cart = getCart();
+  if (!cart.length) {
+    alert("Le panier est vide.");
+    return;
+  }
+
+  const history = JSON.parse(localStorage.getItem("purchase-history")) || [];
+
+  
+  const purchase = {
+    id: Date.now(),
+    name,
+    email,
+    address,
+    items: cart,
+    date: new Date().toLocaleString()
+  };
+
+  history.push(purchase);
+
+
+  localStorage.setItem("purchase-history", JSON.stringify(history));
+
+  localStorage.removeItem(cartKey);
+
+  updateCartDisplay();
+
+  closeModal();
+
+  alert("Commande enregistrée !");
+}
+
+function showHistory() {
+  const history = JSON.parse(localStorage.getItem("purchase-history")) || [];
+  const tableBody = document.getElementById("history-table-body");
+  tableBody.innerHTML = "";
+
+  if (!history.length) {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td colspan="6" style="text-align: center;">Aucune commande trouvée.</td>`;
+    tableBody.appendChild(row);
+    return document.getElementById("history-modal").style.display = "flex";
+  }
+
+  history.forEach((purchase, index) => {
+    const row = document.createElement("tr");
+
+    const itemDetails = purchase.items.map(item => {  
+      const prod = products.find(p => p.id === item.id);
+      return `${prod.name} x${item.qty}`;
+    })
+
+    row.innerHTML = `
+      <td>${purchase.name}</td>
+      <td>${purchase.address}</td>
+      <td>${purchase.email}</td>
+      <td>${itemDetails}</td>
+      <td>${purchase.date}</td>
+      <td>
+       
+        <button onclick="cancelOrder(${index})" style="background: red; color: white;">Annuler</button>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+
+  document.getElementById("history-modal").style.display = "flex";
+}
+
+function cancelOrder(index) {
+  if (!confirm("Êtes-vous sûr de vouloir annuler cette commande ?")) return;
+
+  const history = JSON.parse(localStorage.getItem("purchase-history")) || [];
+  history.splice(index, 1);
+  localStorage.setItem("purchase-history", JSON.stringify(history));
+  showHistory(); 
+}
+
+function closeModal() {
+  document.getElementById("checkout-modal").style.display = "none";
+  editingIndex = null;
+}
+
+function closeHistory() {
+  document.getElementById("history-modal").style.display = "none";
+}
+
+function scrollToCart() {
+  document.getElementById("cart").scrollIntoView({ behavior: "smooth" });
+}
+  loadProducts();
+  updateCartDisplay();
+</script>
+
+</body>
+</html>
